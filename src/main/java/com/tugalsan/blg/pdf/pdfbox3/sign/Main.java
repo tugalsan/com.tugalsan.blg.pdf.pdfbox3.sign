@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.nio.file.*;
 import java.security.KeyStore;
 import java.security.Security;
-import org.apache.pdfbox.examples.signature.CreateVisibleSignature2;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class Main {
@@ -42,7 +41,7 @@ public class Main {
             }
 
             //SIGNER
-            var signer = new CreateVisibleSignature2Modified(keystore, password.toString().toCharArray());
+            var signer = new CreateVisibleSignature2Modified(CreateSignatureBaseModified.SIGNATURE_ALGORITHM_SHA256WithECDSA, keystore, password.toString().toCharArray());
             if (optional_pathImgSign != null) {
                 signer.setImageFile(optional_pathImgSign.toFile());
             }

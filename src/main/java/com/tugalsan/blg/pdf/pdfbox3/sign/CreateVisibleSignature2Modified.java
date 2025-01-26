@@ -19,7 +19,6 @@ package com.tugalsan.blg.pdf.pdfbox3.sign;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -96,9 +95,9 @@ public class CreateVisibleSignature2Modified extends CreateSignatureBaseModified
      * time
      * @throws IOException if no certificate could be found
      */
-    public CreateVisibleSignature2Modified(KeyStore keystore, char[] pin)
+    public CreateVisibleSignature2Modified(String signatureAlgorithm, KeyStore keystore, char[] pin)
             throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException {
-        super(keystore, pin);
+        super(signatureAlgorithm, keystore, pin);
     }
 
     public File getImageFile() {
@@ -457,87 +456,4 @@ public class CreateVisibleSignature2Modified extends CreateSignatureBaseModified
         }
         return signature;
     }
-
-    /**
-     * Arguments are [0] key store [1] pin [2] document that will be signed [3]
-     * image of visible signature
-     *
-     * @param args
-     * @throws java.security.KeyStoreException
-     * @throws java.security.cert.CertificateException
-     * @throws java.io.IOException
-     * @throws java.security.NoSuchAlgorithmException
-     * @throws java.security.UnrecoverableKeyException
-     */
-    public static void main(String[] args) throws KeyStoreException, CertificateException,
-            IOException, NoSuchAlgorithmException, UnrecoverableKeyException {
-        if (args.length < 3) {
-            usage();
-            System.exit(1);
-        }
-
-        String tsaUrl = null;
-        // External signing is needed if you are using an external signing service, e.g. to sign
-        // several files at once.
-        boolean externalSig = false;
-        for (int i = 0; i < args.length; i++) {
-            if ("-tsa".equals(args[i])) {
-                i++;
-                if (i >= args.length) {
-                    usage();
-                    System.exit(1);
-                }
-                tsaUrl = args[i];
-            }
-            if ("-e".equals(args[i])) {
-                externalSig = true;
-            }
-        }
-
-        File ksFile = new File(args[0]);
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        char[] pin = args[1].toCharArray();
-        try (InputStream is = new FileInputStream(ksFile)) {
-            keystore.load(is, pin);
-        }
-
-        File documentFile = new File(args[2]);
-
-        CreateVisibleSignature2Modified signing = new CreateVisibleSignature2Modified(keystore, pin.clone());
-
-        if (args.length >= 4 && !"-tsa".equals(args[3])) {
-            signing.setImageFile(new File(args[3]));
-        }
-
-        File signedDocumentFile;
-        String name = documentFile.getName();
-        String substring = name.substring(0, name.lastIndexOf('.'));
-        signedDocumentFile = new File(documentFile.getParent(), substring + "_signed.pdf");
-
-        signing.setExternalSigning(externalSig);
-
-        // Set the signature rectangle
-        // Although PDF coordinates start from the bottom, humans start from the top.
-        // So a human would want to position a signature (x,y) units from the
-        // top left of the displayed page, and the field has a horizontal width and a vertical height
-        // regardless of page rotation.
-        java.awt.geom.Rectangle2D humanRect = new java.awt.geom.Rectangle2D.Float(100, 200, 150, 50);
-
-        signing.signPDF(documentFile, signedDocumentFile, humanRect, tsaUrl, "Signature1");
-    }
-
-    /**
-     * This will print the usage for this program.
-     */
-    private static void usage() {
-        System.err.println("Usage: java " + CreateVisibleSignature2Modified.class.getName()
-                + " <pkcs12-keystore-file> <pin> <input-pdf> <sign-image>\n"
-                + "options:\n"
-                + "  -tsa <url>    sign timestamp using the given TSA server\n"
-                + "  -e            sign using external signature creation scenario");
-
-        // generate pkcs12-keystore-file with
-        // keytool -storepass 123456 -storetype PKCS12 -keystore file.p12 -genkey -alias client -keyalg RSA
-    }
-
 }
