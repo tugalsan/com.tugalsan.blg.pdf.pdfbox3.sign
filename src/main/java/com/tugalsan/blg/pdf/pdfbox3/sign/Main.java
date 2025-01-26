@@ -4,12 +4,19 @@ import java.awt.geom.Rectangle2D;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.security.KeyStore;
+import java.security.Security;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature2;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class Main {
 
     public static void main(String[] args) {
         try {
+            //WARMUP
+            if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+                Security.addProvider(new BouncyCastleProvider());
+            }
+
             //VARIABLES
             var pathStore = Path.of("C:\\dat\\ssl\\mesa\\tomcat.jks");
             CharSequence password = "MyPass";
