@@ -14,7 +14,7 @@ public class Main {
             var pathStore = Path.of("C:\\dat\\ssl\\mesa\\tomcat.jks");
             CharSequence password = "MyPass";
             var pathPdfInput = Path.of("C:\\git\\blg\\com.tugalsan.blg.pdf.pdfbox3.sign\\HelloWorld.pdf");
-            var pathPdfOutput = pathPdfInput.resolveSibling(pathPdfInput.toFile().getName() + "_signed.pdf");
+            var pathPdfOutput = pathPdfInput.resolveSibling(pathPdfInput.toFile().getName().substring(0, pathPdfInput.toFile().getName().lastIndexOf(".")) + "_signed.pdf");
             System.out.println(pathPdfOutput);
             var rectangle = new Rectangle2D.Float(10, 200, 150, 50);
             var useExternalSignScnerio = false;
