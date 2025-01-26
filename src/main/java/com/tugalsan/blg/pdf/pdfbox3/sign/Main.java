@@ -42,7 +42,7 @@ public class Main {
             }
 
             //SIGNER
-            var signer = new CreateVisibleSignature2(keystore, password.toString().toCharArray());
+            var signer = new CreateVisibleSignature2Modified(keystore, password.toString().toCharArray());
             if (optional_pathImgSign != null) {
                 signer.setImageFile(optional_pathImgSign.toFile());
             }
